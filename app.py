@@ -13,8 +13,7 @@ txt = os.path.join(fpath, txt_filename)
 xlsx = load_workbook(xlsx_filename)
 
 sheet = xlsx["tbl_update"]
-
-
+log = xlsx["tbl_log"]
 
 # function to read all file information in certain folder
 def listFile(pathfolder):
@@ -26,12 +25,35 @@ def listFile(pathfolder):
             b.append(entry.name)
     return a, b
 
-def main():
+# function to update sheet
+def insertData(status, row, pathfolder, id = None, filename = None, newfilename = None):
+    
+    sheet.cell(row = row, column = 3).value = pathfolder
+    sheet.cell(row = row, column = 4).value = status
+
+    if status == "New":
+        sheet.cell(row = row, column = 1).value = id
+        sheet.cell(row = row, column = 2).value = filename
+
+    elif status == "Renamed":
+        sheet.cell(row = row, column = 5).value = sheet.cell(row = row, column = 2).value
+        sheet.cell(row = row, column = 2).value = newfilename
+
+# function to get last non-empty row
+def lastRow(col):
+    row = []
+    for i in sheet[col]:
+        if i.value != "" and i.value != None:
+            row.append(i.row)
+    return max(row)
+
+def FMXL():
     file = open(txt).read().splitlines()
     folder = []
     for p in file:
         folder.append(p.lstrip())
     for fp in folder:
+
         # check status existing excel sheet
         file_id, file_name = listFile(fp)
         for x, y, z in zip(sheet["A"], sheet["B"], sheet["C"]):
@@ -40,28 +62,20 @@ def main():
                     pass
                 else:
                     if x.value in file_id and y.value in file_name:
-                        sheet.cell(row = x.row, column = 4).value = "Exist"
-                        sheet.cell(row = x.row, column = 3).value = fp
+                        insertData(status = "Existing", row = x.row, pathfolder = fp)
                     elif x.value in file_id and y.value not in file_name:
-                        sheet.cell(row = x.row, column = 4).value = "Renamed"
-                        sheet.cell(row = x.row, column = 5).value = sheet.cell(row = x.row, column = 2).value
-                        sheet.cell(row = x.row, column = 2).value = file_name[file_id.index(x.value)]
-                        sheet.cell(row = x.row, column = 3).value = fp
+                        fn = file_name[file_id.index(x.value)]
+                        insertData(status = "Renamed", row = x.row, pathfolder = fp, newfilename = fn)
                     elif x.value not in file_id:
-                        sheet.cell(row = x.row, column = 4).value = "Missing"
-                        sheet.cell(row = x.row, column = 3).value = fp
+                        insertData(status = "Missing", row = x.row, pathfolder = fp)
 
         # check file in excel sheet
         for id in file_id:
             if id not in [c.value for c in sheet["A"]]:
-                row = []
-                for i in sheet["A"]:
-                    if i.value != "" and i.value != None:
-                        row.append(i.row)
-                sheet.cell(row = max(row)+1, column = 1).value = id
-                sheet.cell(row = max(row)+1, column = 2).value = file_name[file_id.index(id)]
-                sheet.cell(row = max(row)+1, column = 3).value = fp
-                sheet.cell(row = max(row)+1, column = 4).value = "New"
+                a = file_name[file_id.index(id)]
+                b = "New"              
+                c = lastRow("A") + 1
+                insertData(id = id, filename = a, status = b, row  = c, pathfolder = fp)
 
         # # bulk rename
         # for x in sheet["G"]:
@@ -78,4 +92,4 @@ def main():
     xlsx.save(xlsx_filename)
 
 if __name__ == "__main__":
-    main()
+    FMXL()
