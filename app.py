@@ -26,7 +26,7 @@ def listFile(pathfolder):
     return a, b
 
 # function to update sheet
-def insertData(status, row, pathfolder, id = None, filename = None, newfilename = None):
+def insertData(status, row, pathfolder, id = None, filename = None, newfilename = None, oldfilename = None, row_log = None):
     
     sheet.cell(row = row, column = 3).value = pathfolder
     sheet.cell(row = row, column = 4).value = status
@@ -36,13 +36,16 @@ def insertData(status, row, pathfolder, id = None, filename = None, newfilename 
         sheet.cell(row = row, column = 2).value = filename
 
     elif status == "Renamed":
-        sheet.cell(row = row, column = 5).value = sheet.cell(row = row, column = 2).value
         sheet.cell(row = row, column = 2).value = newfilename
+        log.cell(row = row_log, column = 1).value = id
+        log.cell(row = row_log, column = 2).value = pathfolder
+        log.cell(row = row_log, column = 3).value = newfilename
+        log.cell(row = row_log, column = 4).value = oldfilename
 
 # function to get last non-empty row
 def lastRow(col):
     row = []
-    for i in sheet[col]:
+    for i in col:
         if i.value != "" and i.value != None:
             row.append(i.row)
     return max(row)
@@ -62,19 +65,35 @@ def FMXL():
                     pass
                 else:
                     if x.value in file_id and y.value in file_name:
-                        insertData(status = "Existing", row = x.row, pathfolder = fp)
+                        a = x.row
+                        insertData(status = "Existing", row = a, pathfolder = fp)
+
                     elif x.value in file_id and y.value not in file_name:
-                        fn = file_name[file_id.index(x.value)]
-                        insertData(status = "Renamed", row = x.row, pathfolder = fp, newfilename = fn)
+                        a = x.row
+                        b = x.value
+                        c = lastRow(log["A"]) + 1
+                        d = sheet.cell(row = x.row, column = 2).value
+                        e = file_name[file_id.index(x.value)]
+                        insertData(
+                            status = "Renamed", 
+                            row = a, 
+                            pathfolder = fp, 
+                            id = b, 
+                            newfilename = e, 
+                            oldfilename = d, 
+                            row_log = c
+                        )
+
                     elif x.value not in file_id:
-                        insertData(status = "Missing", row = x.row, pathfolder = fp)
+                        a = x.row
+                        insertData(status = "Missing", row = a, pathfolder = fp)
 
         # check file in excel sheet
         for id in file_id:
             if id not in [c.value for c in sheet["A"]]:
                 a = file_name[file_id.index(id)]
                 b = "New"              
-                c = lastRow("A") + 1
+                c = lastRow(sheet["A"]) + 1
                 insertData(id = id, filename = a, status = b, row  = c, pathfolder = fp)
 
         # # bulk rename
