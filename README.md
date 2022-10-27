@@ -4,4 +4,4 @@ This project aims to simplify on managing file in each certain folders associate
 
 # Usage
 
-Call `media_satya.py` in CLI
+Call `fmxl.py` in CLI
