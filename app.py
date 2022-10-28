@@ -12,6 +12,7 @@ xlsx_filename = os.path.join(fpath, "LOG.XLSX")
 txt = os.path.join(fpath, txt_filename)
 xlsx = load_workbook(xlsx_filename)
 
+
 sheet = xlsx["tbl_update"]
 log = xlsx["tbl_log"]
 
@@ -94,21 +95,29 @@ def FMXL():
                 a = file_name[file_id.index(id)]
                 b = "New"              
                 c = lastRow(sheet["A"]) + 1
+                
                 insertData(id = id, filename = a, status = b, row  = c, pathfolder = fp)
 
-        # # bulk rename
-        # for x in sheet["G"]:
-        #     if x.value == "ok":
-        #         id = sheet.cell(row = x.row, column = 1).value
-        #         name = file_name[file_id.index(id)]
-        #         src = "\\".join([str(folder), str(name)])
-        #         pnm, ext = os.path.splitext(src)
-        #         new = "\\".join([str(folder), "".join([str(sheet.cell(row = x.row, column = 6).value), ext.upper()])])
-        #         os.rename(src, new)
-        #         sheet.cell(row = x.row, column = 6).value = None
-        #         sheet.cell(row = x.row, column = 7).value = None
-    
-    xlsx.save(xlsx_filename)
+        # bulk rename
+        for x in sheet["G"]:
+            if x.value == "ok":
 
+                a = x.row
+                b = sheet.cell(row = a, column = 1).value
+                c = file_name[file_id.index(b)]
+                d = "\\".join([str(folder), str(c)])
+                e, f = os.path.splitext(d)
+                g = "\\".join([str(folder), "".join([str(sheet.cell(row = a, column = 6).value), f.upper()])])
+
+                os.rename(d, g)
+                
+                sheet.cell(row = x.row, column = 6).value = None
+                sheet.cell(row = x.row, column = 7).value = None
+    
+    try:
+        xlsx.save(xlsx_filename)
+    except:
+        print("The LOG.XLSX is still running, please close the file first and run the script again.")
+    
 if __name__ == "__main__":
     FMXL()
