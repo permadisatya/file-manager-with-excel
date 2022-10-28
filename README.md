@@ -8,7 +8,7 @@ Each file associated with ID file from crated time to maintain relational betwee
 
 User can have log which file that missing, renamed, etc. and can have all information in graph.
 
-No need to copy and paste all the time if the filename has changed.
+**No need to copy and paste all the time if the filename has changed.**
 
 # User Target
 
