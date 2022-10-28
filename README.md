@@ -1,18 +1,18 @@
 # Objectives
 
-This project aims to simplify management file process that related to filename and attribute using excel spreadsheet.
+This project aims to simplify the management file process related to filenames and attributes using an excel spreadsheet.
 
-User can construct the filename using excel and bulk rename it.
+Users can construct the filename using excel and bulk rename it.
 
-Each file associated with ID file from crated time to maintain relational between file and attribute.
+Each file is associated with an ID file from creation time to maintain relational between the file and attribute.
 
-User can have log which file that missing, renamed, etc. and can have all information in graph.
+Users can log which files that missing, renamed, etc., and can have all information in a graph.
 
 **No need to copy and paste all the time if the filename has changed.**
 
 # User Target
 
-Have basic knowledge of python and excel, want to manage filename and attribute using excel.
+Have basic knowledge of python and excel, and want to manage filenames and attributes using excel.
 
 # Usage
 
