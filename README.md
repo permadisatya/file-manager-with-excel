@@ -12,7 +12,7 @@ No need to copy and paste all the time if the filename has changed.
 
 # User Target
 
-Know basic python and excel, want to manage filename and attribute using excel.
+Have basic knowledge of python and excel, want to manage filename and attribute using excel.
 
 # Usage
 
