@@ -51,7 +51,7 @@ def lastRow(col):
             row.append(i.row)
     return max(row)
 
-def FMXL():
+def main():
     file = open(txt).read().splitlines()
     folder = []
     for p in file:
@@ -120,4 +120,4 @@ def FMXL():
         print("The LOG.XLSX is still running, please close the file first and run the script again.")
     
 if __name__ == "__main__":
-    FMXL()
+    main()
