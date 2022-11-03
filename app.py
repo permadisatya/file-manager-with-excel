@@ -6,44 +6,33 @@ import pathlib
 from openpyxl import load_workbook, Workbook
 from posixpath import join
 
-fpath = r"C:\Users\permadisatya\Documents\DT Documents\Personal\Log"
-txt_filename = "FOLDER.TXT"
-xlsx_filename = os.path.join(fpath, "LOG.XLSX")
-txt = os.path.join(fpath, txt_filename)
-xlsx = load_workbook(xlsx_filename)
+fPath = os.getcwd()
 
+# text to maintain
+txtFilename = "FOLDER.TXT"
+txtPath = os.path.join(fPath, txtFilename)
+txt = open(txtPath).read().splitlines()
+listFolder = []
+for path in txt:
+    listFolder.append(path.lstrip())
 
-sheet = xlsx["tbl_update"]
-log = xlsx["tbl_log"]
+# xlsx to maintain
+xlsxFilename = os.path.join(fPath, "LOG.XLSX")
+xlsx = load_workbook(xlsxFilename)
+tableFile = xlsx["tbl_file"]
+tableLog = xlsx["tbl_log"]
 
-# function to read all file information in certain folder
-def listFile(pathfolder):
+# get all file information in certain folder
+def listFile(path):
     a = []
     b = []
-    for entry in pathlib.Path(pathfolder).iterdir():
+    for entry in pathlib.Path(path).iterdir():
         if entry.is_file():
             a.append("".join(["ID", str(os.path.getctime(entry)).replace(".", "")]))
             b.append(entry.name)
     return a, b
 
-# function to update sheet
-def insertData(status, row, pathfolder, id = None, filename = None, newfilename = None, oldfilename = None, row_log = None):
-    
-    sheet.cell(row = row, column = 3).value = pathfolder
-    sheet.cell(row = row, column = 4).value = status
-
-    if status == "New":
-        sheet.cell(row = row, column = 1).value = id
-        sheet.cell(row = row, column = 2).value = filename
-
-    elif status == "Renamed":
-        sheet.cell(row = row, column = 2).value = newfilename
-        log.cell(row = row_log, column = 1).value = id
-        log.cell(row = row_log, column = 2).value = pathfolder
-        log.cell(row = row_log, column = 3).value = newfilename
-        log.cell(row = row_log, column = 4).value = oldfilename
-
-# function to get last non-empty row
+# get last non-empty row
 def lastRow(col):
     row = []
     for i in col:
@@ -51,71 +40,123 @@ def lastRow(col):
             row.append(i.row)
     return max(row)
 
+# get data column
+def listData(path):
+    a = []
+    b = []
+    c = []
+    for i in tableFile["A"]:
+        if tableFile.cell(row=i.row, column=3).value == path:
+            a.append(tableFile.cell(row=i.row, column=1).row)
+            b.append(tableFile.cell(row=i.row, column=1).value)
+            c.append(tableFile.cell(row=i.row, column=2).value)
+    return a, b, c
+
+# get data column
+def listRename(str):
+    a = []
+    b = []
+    c = []
+    d = []
+    e = []
+    for i in tableFile["A"]:
+        if tableFile.cell(row=i.row, column=6).value == str:
+            a.append(tableFile.cell(row=i.row, column=1).row)
+            b.append(tableFile.cell(row=i.row, column=1).value)
+            c.append(tableFile.cell(row=i.row, column=2).value)
+            d.append(tableFile.cell(row=i.row, column=3).value)
+            e.append(tableFile.cell(row=i.row, column=5).value)
+    return a, b, c, d, e
+
+# update tableFile
+def insertData(
+    status, 
+    row, 
+    folderPath, 
+    fileID = None, 
+    fileName = None,
+    newFileName = None, 
+    newRow = None,
+):
+    tableFile.cell(row = row, column = 3).value = folderPath
+    tableFile.cell(row = row, column = 4).value = status
+
+    if status == "New":
+        tableFile.cell(row = row, column = 1).value = fileID
+        tableFile.cell(row = row, column = 2).value = fileName
+
+    if status == "Renamed":
+        tableFile.cell(row = row, column = 1).value = fileID
+        tableFile.cell(row = row, column = 2).value = newFileName
+        tableFile.cell(row = row, column = 5).value = None
+        tableFile.cell(row = row, column = 6).value = None
+        
+        tableLog.cell(row = newRow, column = 1).value = fileID
+        tableLog.cell(row = newRow, column = 2).value = folderPath
+        tableLog.cell(row = newRow, column = 3).value = newFileName
+        tableLog.cell(row = newRow, column = 4).value = fileName
+
 def main():
-    file = open(txt).read().splitlines()
-    folder = []
-    for p in file:
-        folder.append(p.lstrip())
-    for fp in folder:
 
-        # check status existing excel sheet
-        file_id, file_name = listFile(fp)
-        for x, y, z in zip(sheet["A"], sheet["B"], sheet["C"]):
-            if x.value != "id_file" and y.value != "current_file_name":
-                if z.value != fp:
-                    pass
-                else:
-                    if x.value in file_id and y.value in file_name:
-                        a = x.row
-                        insertData(status = "Existing", row = a, pathfolder = fp)
+    if os.path.exists(txtPath) == False:
+        print("There's no file to get folder path to maintain.")
+    else:
+        pass
 
-                    elif x.value in file_id and y.value not in file_name:
-                        a = x.row
-                        b = x.value
-                        c = lastRow(log["A"]) + 1
-                        d = sheet.cell(row = x.row, column = 2).value
-                        e = file_name[file_id.index(x.value)]
-                        insertData(
-                            status = "Renamed", 
-                            row = a, 
-                            pathfolder = fp, 
-                            id = b, 
-                            newfilename = e, 
-                            oldfilename = d, 
-                            row_log = c
-                        )
+    # rename file
+    rRow, rFileID, oldFileName, folderPath, newFileName = listRename("OK")
+    if rRow == []:
+        pass
+    else:
+        for i, j, k, l, m in zip(rRow, rFileID, oldFileName, folderPath, newFileName):
+            old = "\\".join([str(l), str(k)])
+            a, b = os.path.splitext(old)
+            new = "\\".join([str(l), "".join([str(m), b.upper()])])
+            os.rename(old, new)
 
-                    elif x.value not in file_id:
-                        a = x.row
-                        insertData(status = "Missing", row = a, pathfolder = fp)
+            insertData(
+                status="Renamed",
+                row=i,
+                folderPath=l,
+                fileID=j,
+                newFileName="".join([str(m), b.upper()]),
+                fileName=k,
+                newRow=lastRow(tableLog["A"])+1
+            )
 
-        # check file in excel sheet
-        for id in file_id:
-            if id not in [c.value for c in sheet["A"]]:
-                a = file_name[file_id.index(id)]
-                b = "New"              
-                c = lastRow(sheet["A"]) + 1
-                
-                insertData(id = id, filename = a, status = b, row  = c, pathfolder = fp)
+    for x in listFolder:
 
-        # bulk rename
-        for x in sheet["G"]:
-            if x.value == "ok":
+        fileID, fileName = listFile(x)
+        dataRow, dataFileID, dataFileName = listData(x)
+        
+        # check existing data list
+        for i, j, k in zip(dataRow, dataFileID, dataFileName):
+            if j in fileID and k in fileName:
+                insertData(
+                            status="Existing",
+                            row=i,
+                            folderPath=x
+                )
+            elif j not in fileID and k not in fileName:
+                insertData(
+                            status="Missing",
+                            row=i,
+                            folderPath=x
+                )
 
-                a = x.row
-                b = sheet.cell(row = a, column = 1).value
-                c = file_name[file_id.index(b)]
-                d = "\\".join([str(folder), str(c)])
-                e, f = os.path.splitext(d)
-                g = "\\".join([str(folder), "".join([str(sheet.cell(row = a, column = 6).value), f.upper()])])
+        # check for new file
+        for i, j in zip(fileID, fileName):
+            if i not in dataFileID and j not in dataFileName:
+                insertData(
+                    status="New",
+                    row=lastRow(tableFile["A"])+1,
+                    folderPath=x,
+                    fileID=i,
+                    fileName=j
+                )
 
-                os.rename(d, g)
-                
-                sheet.cell(row = x.row, column = 6).value = None
-                sheet.cell(row = x.row, column = 7).value = None
-    
     try:
-        xlsx.save(xlsx_filename)
+        xlsx.save(xlsxFilename)
     except:
         print("The LOG.XLSX is still running, please close the file first and run the script again.")
     
