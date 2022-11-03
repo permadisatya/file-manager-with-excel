@@ -79,23 +79,23 @@ def insertData(
     newFileName = None, 
     newRow = None,
 ):
-    tableFile.cell(row = row, column = 3).value = folderPath
-    tableFile.cell(row = row, column = 4).value = status
+    tableFile.cell(row=row, column=3).value = folderPath
+    tableFile.cell(row=row, column=4).value = status
 
     if status == "New":
-        tableFile.cell(row = row, column = 1).value = fileID
-        tableFile.cell(row = row, column = 2).value = fileName
+        tableFile.cell(row=row, column=1).value = fileID
+        tableFile.cell(row=row, column=2).value = fileName
 
     if status == "Renamed":
-        tableFile.cell(row = row, column = 1).value = fileID
-        tableFile.cell(row = row, column = 2).value = newFileName
-        tableFile.cell(row = row, column = 5).value = None
-        tableFile.cell(row = row, column = 6).value = None
+        tableFile.cell(row=row, column=1).value = fileID
+        tableFile.cell(row=row, column=2).value = newFileName
+        tableFile.cell(row=row, column=5).value = None
+        tableFile.cell(row=row, column=6).value = None
         
-        tableLog.cell(row = newRow, column = 1).value = fileID
-        tableLog.cell(row = newRow, column = 2).value = folderPath
-        tableLog.cell(row = newRow, column = 3).value = newFileName
-        tableLog.cell(row = newRow, column = 4).value = fileName
+        tableLog.cell(row=newRow, column=1).value = fileID
+        tableLog.cell(row=newRow, column=2).value = folderPath
+        tableLog.cell(row=newRow, column=3).value = newFileName
+        tableLog.cell(row=newRow, column=4).value = fileName
 
 def main():
 
