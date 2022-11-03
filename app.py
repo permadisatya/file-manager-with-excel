@@ -5,6 +5,7 @@ import os
 import pathlib
 from openpyxl import load_workbook, Workbook
 from posixpath import join
+import argparse
 
 fPath = os.getcwd()
 
@@ -103,57 +104,74 @@ def main():
     else:
         pass
 
-    # rename file
-    rRow, rFileID, oldFileName, folderPath, newFileName = listRename("OK")
-    if rRow == []:
-        pass
+    parser = argparse.ArgumentParser(
+        description="For maintain filename with spreadsheet."
+    )
+
+    parser.add_argument("-r", "--rename", action="store_true", help="Renaming all selected files.")
+    parser.add_argument("-i", "--inspect", action="store_true", help="Only update sheet with filename changes.")
+
+    args = parser.parse_args()
+
+    if args.rename:
+
+        # rename file
+        rRow, rFileID, oldFileName, folderPath, newFileName = listRename("OK")
+        if rRow == []:
+            pass
+        else:
+            for i, j, k, l, m in zip(rRow, rFileID, oldFileName, folderPath, newFileName):
+                old = "\\".join([str(l), str(k)])
+                a, b = os.path.splitext(old)
+                new = "\\".join([str(l), "".join([str(m), b.upper()])])
+                os.rename(old, new)
+
+                insertData(
+                    status="Renamed",
+                    row=i,
+                    folderPath=l,
+                    fileID=j,
+                    newFileName="".join([str(m), b.upper()]),
+                    fileName=k,
+                    newRow=lastRow(tableLog["A"])+1
+                )
     else:
-        for i, j, k, l, m in zip(rRow, rFileID, oldFileName, folderPath, newFileName):
-            old = "\\".join([str(l), str(k)])
-            a, b = os.path.splitext(old)
-            new = "\\".join([str(l), "".join([str(m), b.upper()])])
-            os.rename(old, new)
+        pass
 
-            insertData(
-                status="Renamed",
-                row=i,
-                folderPath=l,
-                fileID=j,
-                newFileName="".join([str(m), b.upper()]),
-                fileName=k,
-                newRow=lastRow(tableLog["A"])+1
-            )
+    if args.inspect:
 
-    for x in listFolder:
+        for x in listFolder:
 
-        fileID, fileName = listFile(x)
-        dataRow, dataFileID, dataFileName = listData(x)
-        
-        # check existing data list
-        for i, j, k in zip(dataRow, dataFileID, dataFileName):
-            if j in fileID and k in fileName:
-                insertData(
-                            status="Existing",
-                            row=i,
-                            folderPath=x
-                )
-            elif j not in fileID and k not in fileName:
-                insertData(
-                            status="Missing",
-                            row=i,
-                            folderPath=x
-                )
+            fileID, fileName = listFile(x)
+            dataRow, dataFileID, dataFileName = listData(x)
+            
+            # check existing data list
+            for i, j, k in zip(dataRow, dataFileID, dataFileName):
+                if j in fileID and k in fileName:
+                    insertData(
+                                status="Existing",
+                                row=i,
+                                folderPath=x
+                    )
+                elif j not in fileID and k not in fileName:
+                    insertData(
+                                status="Missing",
+                                row=i,
+                                folderPath=x
+                    )
 
-        # check for new file
-        for i, j in zip(fileID, fileName):
-            if i not in dataFileID and j not in dataFileName:
-                insertData(
-                    status="New",
-                    row=lastRow(tableFile["A"])+1,
-                    folderPath=x,
-                    fileID=i,
-                    fileName=j
-                )
+            # check for new file
+            for i, j in zip(fileID, fileName):
+                if i not in dataFileID and j not in dataFileName:
+                    insertData(
+                        status="New",
+                        row=lastRow(tableFile["A"])+1,
+                        folderPath=x,
+                        fileID=i,
+                        fileName=j
+                    )
+    else:
+        pass
 
     try:
         xlsx.save(xlsxFilename)
