@@ -16,6 +16,14 @@ Have basic knowledge of python and excel, and want to manage filenames and attri
 
 # Usage
 
-- Call `fmxl.py` in CLI
-- Add `FOLDER.TXT` and write path folder that user want to maintain.
-- Add `LOG.XLSX` as user interface of maintaining filename and attribute.
+For inspect all files and update it into spreadsheet:
+
+```
+app.py -i
+```
+
+For renaming selected files that user selected in spreadsheet:
+
+```
+app.py -r
+```
