@@ -1,0 +1,19 @@
+Metadata-Version: 2.1
+Name: FMXL
+Version: 0.1.0
+Summary: Manage file name and attribute in Spreadsheet.
+Home-page: https://github.com/permadisatya/file-manager-with-excel
+Author: Permadi Satya
+Author-email: satya.permadi.d@gmail.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 1 - Planning
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python :: 3.10
+License-File: LICENSE.txt
+
+UNKNOWN
+
