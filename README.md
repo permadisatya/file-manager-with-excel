@@ -29,7 +29,6 @@ For inspect all files and update it into spreadsheet:
 ```
 app.py -i
 ```
-![image info](images/f1.png)
 
 For renaming selected files that user selected in spreadsheet:
 
