@@ -14,6 +14,14 @@ Users can log which files that missing, renamed, etc., and can have all informat
 
 Have basic knowledge of python and excel, and want to manage filenames and attributes using excel.
 
+# System Design
+
+![image info](images/f1.png)
+
+![image info](images/f2.png)
+
+![image info](images/f3.png)
+
 # Usage
 
 For inspect all files and update it into spreadsheet:
