@@ -16,7 +16,7 @@ Have basic knowledge of python and excel, and want to manage filenames and attri
 
 # Usage
 
-![image info](images/image.png)
+![image info](images/f1.png)
 
 For inspect all files and update it into spreadsheet:
 
