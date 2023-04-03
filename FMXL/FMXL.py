@@ -8,18 +8,46 @@ from posixpath import join
 import argparse
 
 fPath = os.getcwd()
+xlsxFile = os.path.join(fPath, "LOG.XLSX")
+txtFile = os.path.join(fPath, "FOLDER.TXT")
+
+# check files required is exist
+def isExist(path):
+    status = os.path.isfile(path)
+    return status
+
+if isExist(path=txtFile) == True:
+    pass
+else:
+    open(txtFile, "x")
+
+if isExist(path=xlsxFile) == True:
+    pass
+else:
+    wb = Workbook()
+    del wb['Sheet']
+    wb.create_sheet("tbl_file", 0)
+    wb.create_sheet("tbl_log", 1)
+    wb["tbl_file"].cell(row=1, column=1).value = "id_files"
+    wb["tbl_file"].cell(row=1, column=2).value = "path"
+    wb["tbl_file"].cell(row=1, column=3).value = "file_name"
+    wb["tbl_file"].cell(row=1, column=4).value = "status"
+    wb["tbl_file"].cell(row=1, column=5).value = "new_file_name"
+    wb["tbl_file"].cell(row=1, column=6).value = "rename_status"
+    wb["tbl_log"].cell(row=1, column=1).value = "id_files"
+    wb["tbl_log"].cell(row=1, column=2).value = "path"
+    wb["tbl_log"].cell(row=1, column=3).value = "file_name"
+    wb["tbl_log"].cell(row=1, column=4).value = "old_file_name"
+    wb.save(xlsxFile)
 
 # text to maintain
-txtFilename = "FOLDER.TXT"
-txtPath = os.path.join(fPath, txtFilename)
-txt = open(txtPath).read().splitlines()
+txt = open(txtFile).read().splitlines()
 listFolder = []
 for path in txt:
     listFolder.append(path.lstrip())
 
 # xlsx to maintain
-xlsxFilename = os.path.join(fPath, "LOG.XLSX")
-xlsx = load_workbook(xlsxFilename)
+xlsx = load_workbook(xlsxFile)
 tableFile = xlsx["tbl_file"]
 tableLog = xlsx["tbl_log"]
 
@@ -99,11 +127,6 @@ def insertData(
 
 def main():
 
-    if os.path.exists(txtPath) == False:
-        print("There's no file to get folder path to maintain.")
-    else:
-        pass
-
     parser = argparse.ArgumentParser(
         description="For maintain filename with spreadsheet."
     )
@@ -174,7 +197,7 @@ def main():
         pass
 
     try:
-        xlsx.save(xlsxFilename)
+        xlsx.save(xlsxFile)
     except:
         print("The LOG.XLSX is still running, please close the file first and run the script again.")
     
